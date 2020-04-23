@@ -9,3 +9,5 @@ The blog table has an addition boolean (integer) column called `is_published`.
 
 The `register` view can optionally use a util function that enforces strong passwords. This feature can be enabled by
 setting `USE_STRONG_PASSWORD` to `True` in `instance/config.py`.
+
+The index view fetches a quote from a remote service and shows it at the bottom of the page.

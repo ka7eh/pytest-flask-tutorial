@@ -25,4 +25,13 @@
       <hr>
     {% endif %}
   {% endfor %}
+  <div class="quotes-container">
+    <h3>Just a random quote!</h3>
+    {% for quote in quotes %}
+    <div>
+      <p>{{ quote['quote'] }}</p>
+      <span>{{ quote['author'] }}</span>
+    </div>
+    {% endfor %}
+  </div>
 {% endblock %}

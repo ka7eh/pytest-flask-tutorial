@@ -1,4 +1,7 @@
+import warnings
+
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+import requests
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
@@ -38,7 +41,15 @@ def index():
         " FROM post p JOIN user u ON p.author_id = u.id"
         " ORDER BY created DESC"
     ).fetchall()
-    return render_template("blog/index.html", posts=posts)
+
+    # get a random quote and show it on the template
+    quotes_response = requests.get("https://quotes.rest/qod").json()
+    quotes = [] if quotes_response.get("error") else quotes_response["contents"]["quotes"]
+
+    if not quotes:
+        warnings.warn("Could not fetch any quote!")
+
+    return render_template("blog/index.html", posts=posts, quotes=quotes)
 
 
 @bp.route("/create", methods=("GET", "POST"))

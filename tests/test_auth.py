@@ -1,4 +1,5 @@
 import pytest
+from hypothesis import given, strategies as st
 from flask import g, session, Flask
 from flask.testing import FlaskClient
 

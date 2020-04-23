@@ -1,4 +1,5 @@
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from flask import Flask
 from flask.testing import FlaskClient
 
@@ -97,3 +98,30 @@ def test_delete(client: FlaskClient, auth: AuthActions, app: Flask):
         db = get_db()
         post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
         assert post is None
+
+
+def test_quotes_success(client: FlaskClient, monkeypatch: MonkeyPatch):
+    def fake_request_get(url: str):
+        class Response:
+            def json(self):
+                return {
+                    "contents": {
+                        "quotes": [
+                            {
+                                "quote": "LIBERATE QUOTES",
+                                "author": "Michal Ondrejcek"
+                            }
+                        ]
+                    }
+                }
+        return Response()
+    monkeypatch.setattr("requests.get", fake_request_get)
+    response = client.get("/")
+    assert b"Michal" in response.data
+
+
+def test_quotes_error():
+    """
+    The quote API can return 429 if we send too many requests. The code should raise a warning if that happens.
+    """
+    pass

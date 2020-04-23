@@ -6,6 +6,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["flask",],
-    extras_require={"dev": ["coverage", "pytest", "black"]},
+    install_requires=["flask", "requests"],
+    extras_require={"dev": ["coverage", "pytest", "hypothesis", "black"]},
 )

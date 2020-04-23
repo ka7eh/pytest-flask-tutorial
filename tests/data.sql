@@ -12,14 +12,14 @@ INSERT INTO post (title, body, author_id, created, is_published)
 VALUES
   (
     'test draft post',
-    'test' || x '0a' || 'body',
+    'test' || x'0a' || 'body',
     1,
     '2018-01-01 00:00:00',
     0
   ),
   (
     'test published post',
-    'test' || x '0a' || 'body',
+    'test' || x'0a' || 'body',
     1,
     '2017-01-01 00:00:00',
     1

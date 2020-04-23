@@ -135,3 +135,12 @@ input[type=submit] {
     align-self: start;
     min-width : 10em;
 }
+
+.quotes-container {
+    background: #485F6E;
+}
+
+.quotes-container span {
+    float: right;
+    margin: 10px;
+}
