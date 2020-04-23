@@ -1,6 +1,5 @@
 import functools
 import re
-from typing import Optional
 
 from flask import (
     Blueprint,
@@ -43,17 +42,17 @@ def load_logged_in_user():
         )
 
 
-def validate_password(password: str) -> Optional[str]:
-    if not password:
-        return "Password is required."
-    if current_app.config.get("USE_STRONG_PASSWORD") and not re.match(
-        r"^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$", password
-    ):
-        return (
-            "Password must be at least 8 characters and contain at least one number, one uppercase letter, "
-            "one lowercase letter, and one special character (!@#$&*)."
-        )
-    return None
+def is_strong_password(password: str) -> bool:
+    """
+    This function checks the given password against the following criteria:
+        - Must be at least 8 characters
+        - Must contain at least one number
+        - Must contain at least one uppercase letter
+        - Must contain at least one lowercase letter
+        - Must contain one of special character (!@#$&*)
+    TODO add doctest here for examples of strong and weak passwords
+    """
+    return bool(re.match(r"^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$", password))
 
 
 @bp.route("/register", methods=("GET", "POST"))
@@ -63,6 +62,7 @@ def register():
         password = request.form["password"]
         db = get_db()
 
+        error = None
         if not username:
             error = "Username is required."
         elif (
@@ -70,8 +70,13 @@ def register():
             is not None
         ):
             error = "User {} is already registered.".format(username)
-        else:
-            error = validate_password(password)
+        elif not password:
+            error = "Password is required."
+        elif current_app.config.get("USE_STRONG_PASSWORD") and not is_strong_password(password):
+            error = (
+                "Password must be at least 8 characters and contain at least one number, one uppercase letter, "
+                "one lowercase letter, and one special character (!@#$&*)."
+            )
 
         if error is None:
             db.execute(

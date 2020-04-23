@@ -7,5 +7,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=["flask", "requests"],
-    extras_require={"dev": ["coverage", "pytest", "hypothesis", "black"]},
+    extras_require={"dev": ["coverage", "pytest", "pytest-cov", "tox", "hypothesis", "black"]},
 )
