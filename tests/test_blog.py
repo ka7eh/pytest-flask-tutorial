@@ -8,29 +8,32 @@ from flaskr.db import get_db
 from .conftest import AuthActions
 
 
-def test_index(client: FlaskClient, auth: AuthActions):
-    """
-    TODO parametrize this so it tests both sample posts created in data.sql
-    """
+@pytest.mark.parametrize(
+    ("session_user", "is_posts_author"),
+    ((None, False), ("test", True), ("other", False))
+)
+@pytest.mark.parametrize(
+    ("post", "is_published"),
+    (
+        ((b"test draft post", b"by test on 2018-01-01", b"test\ndraft body"), False),
+        ((b"test published post", b"by test on 2017-01-01", b"test\npublished body"), True),
+    )
+)
+def test_index(client: FlaskClient, auth: AuthActions, session_user, is_posts_author, post, is_published):
     response = client.get("/")
     assert b"Log In" in response.data
     assert b"Register" in response.data
 
-    auth.login()
-    response = client.get("/")
-    assert b"Log Out" in response.data
-    assert b"test draft post" in response.data
-    assert b"by test on 2018-01-01" in response.data
-    assert b"test\nbody" in response.data
-    assert b'href="/1/update"' in response.data
+    if session_user:
+        auth.login(username=session_user, password=session_user)
+        response = client.get("/")
+        assert b"Log Out" in response.data
 
-
-def test_draft_posts_visibility():
-    """
-    TODO implement this
-    Draft posts (is_published = 0) must only show up for the author on the index page.
-    """
-    pass
+    for item in post:
+        if is_published or is_posts_author:
+            assert item in response.data
+        else:
+            assert item not in response.data
 
 
 @pytest.mark.parametrize("path", ("/create", "/1/update", "/1/delete",))
@@ -120,9 +123,20 @@ def test_quotes_success(client: FlaskClient, monkeypatch: MonkeyPatch):
     assert b"Michal" in response.data
 
 
-def test_quotes_error():
+def test_quotes_error(client: FlaskClient, monkeypatch: MonkeyPatch):
     """
-    TODO implement this
     The quote API can return 429 if we send too many requests. The code should raise a warning if that happens.
     """
-    pass
+
+    def fake_request_get(url: str):
+        class Response:
+            def json(self):
+                return {
+                    "error": "429"
+                }
+
+        return Response()
+
+    monkeypatch.setattr("requests.get", fake_request_get)
+    with pytest.warns(UserWarning):
+        client.get("/")

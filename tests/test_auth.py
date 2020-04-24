@@ -1,8 +1,12 @@
+import random
+import string
+
 import pytest
 from hypothesis import given, strategies as st
 from flask import g, session, Flask
 from flask.testing import FlaskClient
 
+from flaskr.auth import is_strong_password
 from flaskr.db import get_db
 from .conftest import AuthActions
 
@@ -62,9 +66,13 @@ def test_logout(client: FlaskClient, auth: AuthActions):
         assert "user_id" not in session
 
 
-def test_password_strength():
-    """
-    TODO implement this
-    Must check password strength criteria are being applied.
-    """
-    pass
+@given(st.builds(
+    lambda lower, upper, digits, special, rest: ''.join(random.sample(lower + upper + digits + special + rest, len(lower) + len(upper) + len(digits) + len(special) + len(rest))),
+    lower=st.text(string.ascii_lowercase, min_size=1),
+    upper=st.text(string.ascii_uppercase, min_size=1),
+    digits=st.text(string.digits, min_size=1),
+    special=st.text("!@#$&*", min_size=1),
+    rest=st.text(min_size=4)
+))
+def test_password_strength(password: str):
+    assert is_strong_password(repr(password))

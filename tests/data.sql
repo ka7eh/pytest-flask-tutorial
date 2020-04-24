@@ -2,24 +2,24 @@ INSERT INTO user (username, password)
 VALUES
   (
     'test',
-    'pbkdf2:sha256:50000$TCI4GzcX$0de171a4f4dac32e3364c7ddc7c14f3e2fa61f2d17574483f7ffbb431b4acb2f'
+    'pbkdf2:sha256:150000$gMtaFovv$008c774da46301815157070e46ea57c2b8272c70d150d04fd33d8b9c1b8c7c2b' -- password is "test"
   ),
   (
     'other',
-    'pbkdf2:sha256:50000$kJPKsz6N$d2d4784f1b030a9761f5ccaeeaca413f27f2ecb76d6168407af962ddce849f79'
+    'pbkdf2:sha256:150000$FKWCNuUj$238cf65f2aead11ce22abeb0a718e130120acb893ca3bc569645dab27ea157c3' -- password is "other"
   );
 INSERT INTO post (title, body, author_id, created, is_published)
 VALUES
   (
     'test draft post',
-    'test' || x'0a' || 'body',
+    'test' || x'0a' || 'draft body',
     1,
     '2018-01-01 00:00:00',
     0
   ),
   (
     'test published post',
-    'test' || x'0a' || 'body',
+    'test' || x'0a' || 'published body',
     1,
     '2017-01-01 00:00:00',
     1

@@ -50,9 +50,14 @@ def is_strong_password(password: str) -> bool:
         - Must contain at least one uppercase letter
         - Must contain at least one lowercase letter
         - Must contain one of special character (!@#$&*)
-    TODO add doctest here for examples of strong and weak passwords
+    >>> is_strong_password("123")
+    False
+    >>> is_strong_password("abc123ABC")
+    False
+    >>> is_strong_password("aB@12345")
+    True
     """
-    return bool(re.match(r"^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$", password))
+    return bool(re.match(r"^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$", password))
 
 
 @bp.route("/register", methods=("GET", "POST"))

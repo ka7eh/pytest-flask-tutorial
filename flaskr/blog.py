@@ -1,6 +1,6 @@
 import warnings
 
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 import requests
 from werkzeug.exceptions import abort
 
@@ -35,11 +35,15 @@ def get_post(id, check_author=True):
 
 @bp.route("/")
 def index():
+    user_id = session.get("user_id")
+
     db = get_db()
     posts = db.execute(
         "SELECT p.id, title, body, created, author_id, is_published, username"
-        " FROM post p JOIN user u ON p.author_id = u.id"
-        " ORDER BY created DESC"
+        "  FROM post p JOIN user u ON p.author_id = u.id"
+        " WHERE p.is_published OR p.author_id = ?"
+        " ORDER BY created DESC",
+        (user_id,)
     ).fetchall()
 
     # get a random quote and show it on the template
